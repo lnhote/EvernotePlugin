@@ -1,0 +1,6 @@
+[
+	{ "keys": ["ctrl+k", "ctrl+s"], "command": "save_to_evernote" },
+	{ "keys": ["ctrl+k", "ctrl+l"], "command": "list_evernote_notes" },
+	{ "keys": ["ctrl+k", "ctrl+a"], "command": "add_to_evernote" },
+	{ "keys": ["ctrl+k", "ctrl+d"], "command": "delete_from_evernote" },
+]

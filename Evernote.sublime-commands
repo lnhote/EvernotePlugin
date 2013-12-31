@@ -1,0 +1,18 @@
+[
+    {
+        "caption": "Evernote: Save to Evernote",
+        "command": "save_to_evernote"
+    },
+    {
+        "caption": "Evernote: List Evernote Notes",
+        "command": "list_evernote_notes"
+    },
+    {
+        "caption": "Evernote: Add to Evernote",
+        "command": "add_to_evernote"
+    },
+    {
+        "caption": "Evernote: Delete From Evernote",
+        "command": "delete_from_evernote"
+    }
+]
