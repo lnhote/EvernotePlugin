@@ -77,6 +77,6 @@ Use the `Evernote` / `Save to Evernote` command to see a list of your notes in n
 
 # Information
 
-Source: https://github.com/lnhote/SublimeEvernotePlugin
+Source: https://github.com/lnhote/EvernotePlugin
 
 Authors: [Hunter Lin](https://github.com/lnhote/)
