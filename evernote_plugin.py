@@ -1,4 +1,6 @@
 import sublime, sublime_plugin
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
 
 import thrift.protocol.TBinaryProtocol as TBinaryProtocol
 import thrift.transport.THttpClient as THttpClient
