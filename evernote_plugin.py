@@ -10,16 +10,36 @@ import evernote.edam.notestore.NoteStore as NoteStore
 import evernote.edam.type.ttypes as Types
 import evernote.edam.error.ttypes as Errors
 import html
+import functools
 
-#view.run_command('add_to_evernote')
-class ExampleCommand(sublime_plugin.TextCommand):
-	def run(self, edit):
-		self.view.insert(edit, 0, "Hello, World!")
+class MissingCredentialsException(Exception):
+	pass
 
+def catch_errors(fn):
+	@functools.wraps(fn)
+	def _fn(*args, **kwargs):
+		try:
+			return fn(*args, **kwargs)
+		except MissingCredentialsException:
+			sublime.error_message("Evernote: token isn't provided in Evernote.sublime-settings file.")
+			user_settings_path = os.path.join(sublime.packages_path(), 'User', 'Evernote.sublime-settings')
+			if not os.path.exists(user_settings_path):
+				default_settings_path = os.path.join(sublime.packages_path(), 'Evernote', 'Evernote.sublime-settings')
+				shutil.copy(default_settings_path, user_settings_path)
+			sublime.active_window().open_file(user_settings_path)
+		except:
+			traceback.print_exc()
+			sublime.error_message("Evernote: unknown error (please, report a bug!)")
+
+	return _fn
 # setting config
 
 def getAuthToken():
-	return 'S=s1:U=8cf25:E=149ed005b46:C=142954f2f49:P=1cd:A=en-devtoken:V=2:H=b8ac1a55f6073b310bc22bc449dd865b'
+	settings = sublime.load_settings('Evernote.sublime-settings')
+	token = settings.get('token')
+	if not token:
+		raise MissingCredentialsException()
+	return token
 
 def getEvernoteHost():
 	return "sandbox.evernote.com"
@@ -108,6 +128,7 @@ def makeSublimeNotebook():
 
 # List all of the notebooks in the user's account  
 class ListEvernoteNotesCommand(sublime_plugin.TextCommand):
+	@catch_errors
 	def run(self, edit):
 		print("ListEvernoteNotesCommand")
 		notebooks = getNoteStore().listNotebooks(getAuthToken())
@@ -118,6 +139,7 @@ class ListEvernoteNotesCommand(sublime_plugin.TextCommand):
 				notes = notebook.listNote
 
 class AddToEvernoteCommand(sublime_plugin.TextCommand):
+	@catch_errors
 	def run(self, edit):
 
 		def onNewTitle(inputTitle):
@@ -138,6 +160,7 @@ class AddToEvernoteCommand(sublime_plugin.TextCommand):
 		self.view.window().show_input_panel('New Title:', '', onNewTitle, None, None)
 
 class SaveToEvernoteCommand(sublime_plugin.TextCommand):
+	@catch_errors
 	def run(self, edit):
 		print("SaveToEvernoteCommand")
 		global currentNote
@@ -145,6 +168,7 @@ class SaveToEvernoteCommand(sublime_plugin.TextCommand):
 		return
 
 class DeleteFromEvernoteCommand(sublime_plugin.TextCommand):
+	@catch_errors
 	def run(self, edit):
 		print("DeleteFromEvernoteCommand")
 		currentGuid = settings.get('current_guid')
@@ -159,3 +183,9 @@ class TestCommand(sublime_plugin.TextCommand):
 		for line in lines:
 			formattedBody += '<p>%s</p>' % line
 		print(formattedBody)
+
+class ExampleCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		self.view.insert(edit, 0, "Hello, World!")
+
+#view.run_command('add_to_evernote')
