@@ -54,10 +54,14 @@ def createSublimeNotebook():
 	return
 
 def makeNote(noteTitle, noteBody, parentNotebook=None):
-	h = html.escape(noteBody)
+	escapedBody = html.escape(noteBody)
+	lines = escapedBody.split('\n')
+	formattedBody = ''
+	for line in lines:
+		formattedBody += '<p>%s</p>' % line
 	noteContent = r'<?xml version="1.0" encoding="UTF-8"?>'
 	noteContent += r'<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">'
-	noteContent += r'<en-note>%s</en-note>' %  h
+	noteContent += r'<en-note>%s</en-note>' %  formattedBody
 	## Create note object
 	newNote = Types.Note()
 	newNote.title = noteTitle
@@ -146,3 +150,12 @@ class DeleteFromEvernoteCommand(sublime_plugin.TextCommand):
 		currentGuid = settings.get('current_guid')
 		result = getNoteStore().expungeNote(getAuthToken(), currentGuid)
 		return
+
+class TestCommand(sublime_plugin.TextCommand):
+	def run(self, edit):
+		body = self.view.substr(sublime.Region(0, self.view.size()))
+		lines = body.split('\n')
+		formattedBody = ''
+		for line in lines:
+			formattedBody += '<p>%s</p>' % line
+		print(formattedBody)
